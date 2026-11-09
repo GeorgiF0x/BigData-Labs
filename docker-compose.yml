@@ -2,12 +2,12 @@ services:
   jupyter:
     # Docker Hub images stopped updating on 2023-10-20; official images live on quay.io
     image: quay.io/jupyter/datascience-notebook:latest
-    container_name: smarttour-jupyter
+    container_name: bigdata-labs-jupyter
     ports:
       # Bound to localhost only: the token is disabled, so it must not be reachable from the network
       - "127.0.0.1:8888:8888"
     volumes:
-      - ./:/home/jovyan/smarttour
+      - ./:/home/jovyan/labs
     command: start-notebook.py --IdentityProvider.token=''
     depends_on:
       - postgres
@@ -17,12 +17,12 @@ services:
 
   postgres:
     image: postgres:17
-    container_name: smarttour-postgres
+    container_name: bigdata-labs-postgres
     environment:
-      POSTGRES_USER: smarttour
-      POSTGRES_PASSWORD: smarttour123
+      POSTGRES_USER: labs
+      POSTGRES_PASSWORD: labs123
       # Only applied when the volume is created for the first time
-      POSTGRES_DB: smarttour_db
+      POSTGRES_DB: labs_db
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
@@ -30,14 +30,14 @@ services:
       - datos_postgres:/var/lib/postgresql/data
       # Local folder shared so Postgres can read CSV files
       - ./datasets/labPstgrades:/datos
-      - ./:/smarttour
+      - ./:/labs
     networks:
       - red-bbdd
     restart: unless-stopped
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: smarttour-pgadmin
+    container_name: bigdata-labs-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: alumno@clase.com
       PGADMIN_DEFAULT_PASSWORD: AdminClase2026!
@@ -46,7 +46,7 @@ services:
     volumes:
       # Keeps registered servers and preferences between restarts
       - datos_pgadmin:/var/lib/pgadmin
-      - ./:/smarttour
+      - ./:/labs
     depends_on:
       - postgres
     networks:
